@@ -137,8 +137,10 @@ class turtlebot(object):
         self.wz = self.uw
 
     def control_robust(self, vr, wr, t):
-        self.uv = vr * cos(self.theta_e) + self.Kx_robust * self.xe + phi_t(t) * sat(self.xe, 0.25)
-        self.uw = wr + vr * (self.Ky_robust * self.ye + self.Kt_robust * sin(self.theta_e)) + psi_t(t) * sat(sin(self.theta_e), 0.5)
+        #self.uv = vr * cos(self.theta_e) + self.Kx_robust * self.xe + phi_t(t) * sat(self.xe, 0.25)
+        #self.uw = wr + vr * (self.Ky_robust * self.ye + self.Kt_robust * sin(self.theta_e)) + psi_t(t) * sat(sin(self.theta_e), 0.5)
+        self.uv = vr * cos(self.theta_e) + self.Kx_robust * self.xe + 0.15 * sat(self.xe, 0.25)
+        self.uw = wr + vr * (self.Ky_robust * self.ye + self.Kt_robust * sin(self.theta_e)) + 0.45 * sat(sin(self.theta_e), 0.5)
 
         self.vx = self.uv
         self.wz = self.uw
@@ -190,13 +192,14 @@ def main():
         dt_ = time_now - time_before
         t = time_now
 
-        vr = 0.15
+        vr = 0.175
         wr = 1.5*3.38321412225*0.24*cos(0.24*t)/(1+(3.38321412225*sin(0.24*t))**2)                    # 8 knots
         #wr = 0.25                                                                                    # circle
 
         bot_1.update_err_dynamics(vr, wr, dt=dt_)
         #bot_1.control_norminal(vr, wr)
-        bot_1.control_adaptive(vr, wr, dt=dt_)
+        #bot_1.control_adaptive(vr, wr, dt=dt_)
+        bot_1.control_robust(vr, wr, t)
         
         rate.sleep()
 
