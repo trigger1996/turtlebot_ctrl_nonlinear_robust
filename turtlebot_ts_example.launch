@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
     <arg name="model" default="burger" doc="model type [burger, waffle, waffle_pi]"/>
-    <arg name="x_pos" default="0.0"/>
-    <arg name="y_pos" default="0.0"/>
-    <arg name="z_pos" default="0.0"/>
+    <arg name="x_pos" default=" 0.5"/>
+    <arg name="y_pos" default="-0.15"/>
+    <arg name="z_pos" default=" 0.0"/>
 
     <include file="$(find gazebo_ros)/launch/empty_world.launch">
       <arg name="world_name" value="$(find turtlebot3_gazebo)/worlds/empty.world"/>
@@ -23,9 +23,12 @@
     <node pkg="turtlebot_ctrl" name="turtlebot_ctrl" type="turtlebot_ctrl.py" output="screen">
     </node>
 
-    <node pkg="rviz" name="rviz" type="rviz" output="screen" args="-d /home/ubuntu484/catkin_ws/src/turtlebot_ctrl/rviz/turtlebot_ctrl.rviz">
+    <node pkg="rviz" name="rviz" type="rviz" output="screen" args="-d /home/ghost/catkin_ws_ros/src/turtlebot_ctrl_nonlinear_robust/rviz/turtlebot_ctrl.rviz">
+    <!-- /home/ubuntu484/catkin_ws/src/turtlebot_ctrl_nonlinear_robust/rviz/turtlebot_ctrl.rviz -->
+    <!-- /home/ghost/catkin_ws_ros/src/turtlebot_ctrl_nonlinear_robust/rviz/turtlebot_ctrl.rviz -->    
     </node>
 
+    <!-- x y z yaw pich roll -->
     <node pkg="tf" type="static_transform_publisher" name="turtlebot_1_map_odom_broadcaster" args="0 0 0 0 0 0 /map /turtlebot_1/odom 5" />
  
 

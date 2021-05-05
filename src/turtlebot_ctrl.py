@@ -68,21 +68,23 @@ class turtlebot(object):
         self.vx = 0
         self.wz = 0
 
-        self.Kx_norminal = 1        # 5
-        self.Ky_norminal = 0.25     # 1.25
-        self.Kt_norminal = 0.015    # 0.33
+        self.Kx_norminal = 0.35     # 5
+        self.Ky_norminal = 0.075    # 1.25
+        self.Kt_norminal = 0.0085   # 0.33
 
-        self.Kx_adaptive = 1        # 5
-        self.Ky_adaptive = 0.25     # 1.25
-        self.Kt_adaptive = 0.015    # 0.33
+        self.Kx_adaptive = 0.35
+        self.Ky_adaptive = 0.025
+        self.Kt_adaptive = 0.00618
         self.v_hat = 0
         self.w_hat = 0
-        self.v_hat_max = 0.15        # integration limit
-        self.w_hat_max = 0.25
+        self.v_hat_max = 0.01       # integration limit
+        self.w_hat_max = 0.03
 
-        self.Kx_robust = 1          # 5
-        self.Ky_robust = 0.25       # 1.25
-        self.Kt_robust = 0.015      # 0.33
+        self.Kx_robust = 0.45       # 5
+        self.Ky_robust = 0.125      # 1.25
+        self.Kt_robust = 0.0618     # 0.33
+        self.phi_t = 0.005
+        self.psi_t = 0.015
 
         self.uv = 0
         self.uw = 0
@@ -140,7 +142,7 @@ class turtlebot(object):
         #self.uw = wr + vr * (self.Ky_adaptive * self.ye + self.Kt_adaptive * sin(self.theta_e)) - self.w_hat
 
         # Yu2015 Non-constraint
-        self.v_hat += -self.xe * dt
+        self.v_hat += -self.Kx_adaptive * self.xe * dt
         self.v_hat =  data_saturation(self.v_hat, self.v_hat_max, -self.v_hat_max)
 
         self.w_hat += -2 * sin(self.theta_e / 2) * dt
@@ -161,9 +163,8 @@ class turtlebot(object):
         #self.uw = wr + vr * (self.Ky_robust * self.ye + self.Kt_robust * sin(self.theta_e)) + 0.25 * sat(sin(self.theta_e), 0.5)
 
         # Yu2015 Non-constraint
-        self.uv = vr + self.Kx_robust * self.xe - self.v_hat + 0.05 * sat(self.xe, 0.25)
-        self.uw = wr + self.Ky_robust * vr * (self.ye * cos(self.theta_e / 2) - self.xe * sin(self.theta_e / 2)) + self.Kt_robust * sin(self.theta_e / 2) + 0.015 * sat(sin(self.theta_e / 2), 0.5)
-
+        self.uv = vr + self.Kx_robust * self.xe - self.v_hat + self.phi_t * sat(self.xe, 0.025)
+        self.uw = wr + self.Ky_robust * vr * (self.ye * cos(self.theta_e / 2) - self.xe * sin(self.theta_e / 2)) + self.Kt_robust * sin(self.theta_e / 2) + self.psi_t * sat(sin(self.theta_e / 2), 0.05)
 
         self.vx = self.uv
         self.wz = self.uw
@@ -221,8 +222,8 @@ def main():
 
         bot_1.update_err_dynamics(vr, wr, dt=dt_)
         #bot_1.control_norminal(vr, wr)
-        bot_1.control_adaptive(vr, wr, dt=dt_)
-        #bot_1.control_robust(vr, wr, t)
+        #bot_1.control_adaptive(vr, wr, dt=dt_)
+        bot_1.control_robust(vr, wr, t)
         
         rate.sleep()
 
